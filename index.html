@@ -1,9 +1,815 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="refresh" content="0; url=4.html">
-  </head>
-  <body>
-    <p>If you are not redirected, <a href="4.html">click here</a>.</p>
-  </body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Blockmango • Pro Advanced Hub</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
+
+<style>
+/* ------------------------------
+   Visual design (rich, responsive)
+   ------------------------------ */
+:root{
+  --bg:#041018; --panel:#07121a; --muted:#9fb6b8; --accent:#00e5ff; --danger:#ff5c6c;
+  --glass: rgba(255,255,255,0.03); --card-border: rgba(255,255,255,0.04);
+  --success:#3fe27f;
+  --toast-bg: rgba(10,10,10,0.9);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:
+  radial-gradient(1200px 400px at 10% 10%, rgba(0,229,255,0.02), transparent 6%),
+  linear-gradient(180deg,#031018,#041018); color:#e7f7f8; -webkit-font-smoothing:antialiased}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.02);backdrop-filter: blur(6px)}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#002b2b,#00383a);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+.logo svg{width:30px;height:30px}
+.title{font-weight:900;color:var(--accent);font-size:18px}
+.controls{display:flex;gap:12px;align-items:center}
+.stats-display{display:flex;gap:16px;align-items:center;background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:8px;border:1px solid var(--card-border)}
+.stat-item{display:flex;flex-direction:column;align-items:center;min-width:50px}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.5px}
+.stat-value{font-size:16px;color:var(--accent);font-weight:800;margin-top:2px}
+.btn{background:linear-gradient(180deg,var(--accent),#00b8d6);color:#002;padding:10px 14px;border-radius:10px;border:none;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:8px 10px;border-radius:8px}
+.btn.danger{background:linear-gradient(180deg,var(--danger),#e04853);color:#fff}
+.wrap{display:flex;gap:18px;padding:18px;max-width:1200px;margin:14px auto;width:calc(100% - 36px)}
+.sidebar{width:300px;min-width:240px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px;border:1px solid var(--card-border);height:calc(100vh - 140px);overflow:auto;box-shadow:0 20px 80px rgba(0,0,0,0.65)}
+.sidebar h3{color:var(--accent);margin:0 0 8px 0;font-size:16px}
+.search{display:flex;gap:8px;margin-bottom:10px}
+input[type="search"],input[type="text"],select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--card-border);background:#061218;color:#e7f7f8}
+input[type="file"]{width:100%;padding:12px;border-radius:10px;border:2px dashed var(--accent);background:rgba(0,229,255,0.05);color:var(--accent);cursor:pointer;font-weight:600;transition:all 0.2s ease}
+input[type="file"]:hover{background:rgba(0,229,255,0.1);border-color:#00b8d6}
+input[type="file"]:focus{outline:2px solid var(--accent);outline-offset:2px}
+label.small{font-size:12px;color:var(--muted);display:block;margin:8px 0 6px}
+.filters{display:flex;flex-direction:column;gap:8px}
+.small{font-size:12px;color:var(--muted)}
+.main{flex:1;min-width:320px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:10px 14px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.02);color:var(--muted);cursor:pointer}
+.tab.active{background:linear-gradient(90deg,var(--accent),#00b4d1);color:#001;font-weight:800}
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:14px;border-radius:12px;border:1px solid var(--card-border);box-shadow:0 12px 40px rgba(0,0,0,0.6);position:relative;overflow:hidden;min-height:120px}
+.card h4{margin:0;color:var(--accent);font-size:16px}
+.meta{font-size:12px;color:var(--muted);margin-top:6px}
+pre.code{background:#050608;padding:12px;border-radius:8px;overflow:auto;margin-top:12px;font-size:13px;line-height:1.45;color:#cfeef1;position:relative;white-space:pre-wrap;word-break:break-word}
+.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pill{background:rgba(0,0,0,0.25);padding:6px 8px;border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+.uploader-preview{max-height:280px;max-width:100%;object-fit:contain;border-radius:8px;margin-top:8px;border:1px solid rgba(255,255,255,0.03);display:block}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:999;overflow-y:auto;padding:20px}
+.modal .box{width:100%;max-width:1000px;background:linear-gradient(180deg,#061217,#041014);padding:18px;border-radius:12px;border:1px solid var(--card-border);box-shadow:0 26px 80px rgba(0,0,0,0.9);margin:auto}
+.form-grid{display:grid;grid-template-columns:1fr 360px;gap:12px;align-items:start}
+textarea.form-code{width:100%;min-height:320px;padding:12px;border-radius:10px;border:1px solid var(--card-border);background:#050608;color:#eaf2f5;font-family:monospace;white-space:pre-wrap;resize:vertical}
+.copy-btn{position:absolute;top:8px;right:8px;background:var(--accent);border:none;padding:6px 10px;border-radius:8px;font-weight:800;color:#002;cursor:pointer}
+.toast-ctr{position:fixed;right:18px;bottom:18px;z-index:2000;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.toast{background:var(--toast-bg);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6);max-width:320px;border:1px solid rgba(255,255,255,0.03);opacity:0;transform:translateY(12px);animation:toast-in .22s forwards}
+.toast.warn{border-left:4px solid var(--danger)}
+.toast.success{border-left:4px solid var(--success)}
+@keyframes toast-in{to{opacity:1;transform:none}}
+.badge{background:linear-gradient(180deg,rgba(0,229,255,0.06),rgba(0,229,255,0.02));padding:6px 8px;border-radius:999px;color:var(--muted);font-size:12px;border:1px solid rgba(0,229,255,0.04)}
+.report{background:var(--danger);color:#050608;padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
+.file-upload-area{position:relative;margin-top:8px}
+.file-upload-label{display:block;cursor:pointer;text-align:center;padding:16px;border:2px dashed var(--accent);border-radius:10px;background:rgba(0,229,255,0.05);color:var(--accent);font-weight:600;transition:all 0.2s ease}
+.file-upload-label:hover{background:rgba(0,229,255,0.1);border-color:#00b8d6}
+.file-upload-label.has-file{border-color:var(--success);color:var(--success);background:rgba(63,226,127,0.05)}
+@media (max-width:980px){.wrap{flex-direction:column;padding:12px;width:calc(100% - 24px)}.sidebar{width:100%;height:auto}.form-grid{grid-template-columns:1fr}.card pre.code{font-size:12px}}
+/* subtle motion */
+@keyframes pop { from{transform:translateY(8px);opacity:0} to{transform:none;opacity:1} } .card{animation:pop .18s ease}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo" aria-hidden>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7c0-1.1.9-2 2-2h6v12H5a2 2 0 01-2-2V7z" fill="#00e5ff" opacity="0.12"/><path d="M13 5h6a2 2 0 012 2v8a2 2 0 01-2 2h-6V5z" fill="#00e5ff" opacity="0.18"/><path d="M7 3h10v18H7z" fill="#002b2b"/></svg>
+    </div>
+    <div>
+      <div class="title">Blockmango • Pro Advanced Hub</div>
+      <div class="small" style="color:var(--muted);font-size:12px">Blockman GO • Lua 5.1 • Pro features</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="stats-display" id="statsDisplay">
+      <div class="stat-item">
+        <span class="stat-label">Snippets</span>
+        <span class="stat-value" id="snippetCount">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Slots</span>
+        <span class="stat-value" id="slotCount">5</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Points</span>
+        <span class="stat-value" id="pointCount">0</span>
+      </div>
+    </div>
+    <button class="btn ghost" id="exportBtn">Export</button>
+    <button class="btn ghost" id="importBtn">Import</button>
+    <button class="btn" id="newBtn">+ New snippet</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="sidebar" aria-label="filters">
+    <h3>Find code</h3>
+    <div class="search">
+      <input id="q" type="search" placeholder="Search title, code, tags..." />
+      <button class="btn" id="searchBtn">Go</button>
+    </div>
+
+    <div class="filters">
+      <label class="small">Category</label>
+      <div style="display:flex;gap:8px">
+        <button class="tab active" data-cat="Panel">Panel</button>
+        <button class="tab" data-cat="Function">Function</button>
+        <button class="tab" data-cat="GUI">GUI</button>
+      </div>
+
+      <label class="small">Tag (comma)</label>
+      <input id="tagFilter" type="text" placeholder="e.g. gui, example" />
+
+      <label class="small">Sort</label>
+      <select id="sortBy">
+        <option value="new">Newest</option>
+        <option value="old">Oldest</option>
+        <option value="title">Title A→Z</option>
+      </select>
+
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn ghost" id="clearFilters">Clear</button>
+        <button class="btn ghost" id="refreshBtn">Refresh</button>
+      </div>
+
+      <div class="small" style="margin-top:12px">Saved locally. Export JSON to share online. New users get <strong>5</strong> upload slots.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="tabs" id="mainTabs">
+      <button class="tab active" data-view="all">All</button>
+      <button class="tab" data-view="panel">Panel</button>
+      <button class="tab" data-view="function">Function</button>
+      <button class="tab" data-view="gui">GUI</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="pill" id="currentFilter">All</div>
+      <div style="flex:1"></div>
+      <div class="tools">
+        <button class="btn ghost" id="prevPage">‹</button>
+        <div class="pill" id="pageInfo">1</div>
+        <button class="btn ghost" id="nextPage">›</button>
+      </div>
+    </div>
+
+    <section id="listArea" class="grid" aria-live="polite"></section>
+    <div class="pager" id="pagerArea"></div>
+  </main>
+</div>
+
+<footer style="text-align:center;padding:18px;color:var(--muted)"><small>Made for pro modders — keep uploads ethical.</small></footer>
+
+<!-- modal -->
+<div class="modal" id="modal">
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle" style="color:var(--accent);margin-top:0">New snippet</h3>
+    <div style="margin-bottom:8px" class="small">Fill title, description, tags, paste code, and optionally attach an image (screenshot/showcase). Each post gives a one-time edit token.</div>
+    <div class="form-grid" style="margin-top:10px">
+      <div>
+        <label class="small">Title</label>
+        <input id="s_title" type="text" placeholder="Short, descriptive title" />
+        <label class="small">Description</label>
+        <input id="s_desc" type="text" placeholder="One-line summary or usage" />
+        <label class="small">Tags (comma separated)</label>
+        <input id="s_tags" type="text" placeholder="gui,example,math" />
+        <label class="small">Category</label>
+        <select id="s_cat"><option>Panel</option><option>Function</option><option>GUI</option></select>
+        <label class="small">Author name (or guest)</label>
+        <input id="s_author" type="text" placeholder="guest" />
+        <div class="small" style="margin-top:8px">When saved you get an <strong>edit token</strong> — copy it to edit/delete your post later.</div>
+      </div>
+
+      <div class="col-right">
+        <label class="small">Code (paste or load .lua)</label>
+        <textarea id="s_code" class="form-code" placeholder="-- paste your Lua code here"></textarea>
+        
+        <div class="file-upload-area">
+          <label class="small">Attach image (optional)</label>
+          <label for="s_file" class="file-upload-label" id="fileLabel">
+            📎 Choose image file or drag & drop
+          </label>
+          <input type="file" id="s_file" accept="image/*,.png,.jpg,.jpeg,.gif" style="display:none"/>
+          <img id="s_preview" class="uploader-preview" style="display:none" alt="preview"/>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button class="btn ghost" id="cancelModal">Cancel</button>
+      <button class="btn" id="saveBtn">Save snippet</button>
+    </div>
+  </div>
+</div>
+
+<!-- toasts -->
+<div class="toast-ctr" id="toastCtr"></div>
+
+<script>
+/* =========================
+   Pro Single-file Hub (client-only)
+   - local storage persistence
+   - per-post edit token shown once
+   - image attachments via base64
+   - duplicate & spam detection
+   - upload slots + points system
+   - 1-like-per-user enforced via client tokens
+   - toast notifications for warnings/info
+   ========================= */
+
+const STORAGE_KEY = 'bm_pro_v5';
+let posts = [];            
+const PAGE_SIZE = 5;
+let page = 1;
+let activeView = 'all';
+let user = { token: null, liked: [] };
+let uploadSlots = 5;
+let userPoints = 0;
+
+/* Utilities */
+const uid = ()=> Date.now().toString(36) + Math.random().toString(36).slice(2,9);
+const now = ()=> new Date().toISOString();
+const toastCtr = document.getElementById('toastCtr');
+
+function toast(text, type='info', time=3800){
+  const t = document.createElement('div'); t.className = 'toast ' + (type==='warn' ? 'warn' : type==='success' ? 'success' : '');
+  t.innerText = text;
+  toastCtr.appendChild(t);
+  setTimeout(()=> t.style.opacity = '1', 20);
+  setTimeout(()=> { t.style.opacity = '0'; t.style.transform = 'translateY(6px)'; setTimeout(()=> t.remove(), 200); }, time);
+}
+
+/* storage: load & save */
+function saveAll(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({ posts, user, uploadSlots, userPoints })); updateCount(); }
+function loadAll(){ try { const obj = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); posts = Array.isArray(obj.posts) ? obj.posts : []; user = obj.user || user; uploadSlots = typeof obj.uploadSlots === 'number' ? obj.uploadSlots : 5; userPoints = typeof obj.userPoints === 'number' ? obj.userPoints : 0; } catch(e){ posts=[]; user.token = user.token || uid(); uploadSlots=5; userPoints=0; } updateCount(); }
+function updateCount(){ 
+  document.getElementById('snippetCount').innerText = posts.length;
+  document.getElementById('slotCount').innerText = uploadSlots;
+  document.getElementById('pointCount').innerText = userPoints;
+}
+
+/* ensure user token */
+if(!localStorage.getItem('bm_user_token')) localStorage.setItem('bm_user_token', uid());
+user.token = localStorage.getItem('bm_user_token');
+user.liked = JSON.parse(localStorage.getItem('bm_user_liked')||'[]');
+
+/* bootstrap heavy demo posts if none to raise file-size feel */
+loadAll();
+if(posts.length === 0){
+  // embed a medium base64 PNG to increase file size and realism
+  const sampleImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABV7bNHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABGklEQVR4nO3SQREAAAgDINc/9K3hDQi4gE0zq3wAAAAAAwL8M7gAAAADw8Q0CAAAAAOARAgAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAAAAkEECQAAAAAAJBBAmAAAAv8G/AVx6cQImnWQAAAABJRU5ErkJggg==";
+  posts.push({ id: uid(), title: 'Lua 5.1 — factorial (pro)', desc: 'Standard factorial example', tags:['math','example'], cat:'Function', author:'system', code:'-- factorial\\nfunction fact(n) if n<=1 then return 1 end return n*fact(n-1) end\\nprint(fact(6))', created: now(), token: uid(), likes:0, image: sampleImg, reports:0 });
+  posts.push({ id: uid(), title: 'Panel: Toggle Demo (pro)', desc:'Toggle panel example (concept)', tags:['gui','panel'], cat:'Panel', author:'system', code:'-- toggle panel pseudo\\nlocal panel = {}\\nfunction toggle() panel.visible = not panel.visible end', created: now(), token: uid(), likes:0, image: sampleImg, reports:0 });
+  saveAll();
+}
+
+/* Modal handling */
+const modal = document.getElementById('modal');
+const s_file = document.getElementById('s_file');
+const s_preview = document.getElementById('s_preview');
+const fileLabel = document.getElementById('fileLabel');
+document.getElementById('newBtn').addEventListener('click', ()=> openModal());
+document.getElementById('cancelModal').addEventListener('click', closeModal);
+s_file.addEventListener('change', handleFileLoad);
+document.getElementById('saveBtn').addEventListener('click', saveSnippet);
+
+function openModal(editId){
+  modal.style.display = 'flex';
+  modal.dataset.edit = editId || '';
+  document.getElementById('modalTitle').innerText = editId ? 'Edit snippet' : 'New snippet';
+  clearModal();
+  if(editId){
+    const p = posts.find(x=>x.id === editId);
+    if(p) fillModal(p);
+  }
+  document.getElementById('s_title').focus();
+}
+function closeModal(){
+  modal.style.display = 'none';
+  modal.dataset.edit = '';
+  clearModal();
+}
+function clearModal(){
+  ['s_title','s_desc','s_tags','s_author','s_code'].forEach(id=> document.getElementById(id).value = '');
+  document.getElementById('s_cat').value = 'Panel';
+  s_preview.style.display = 'none'; s_preview.src = ''; s_file.value = '';
+  fileLabel.innerText = '📎 Choose image file or drag & drop';
+  fileLabel.classList.remove('has-file');
+}
+function fillModal(p){
+  document.getElementById('s_title').value = p.title || '';
+  document.getElementById('s_desc').value = p.desc || '';
+  document.getElementById('s_tags').value = (p.tags || []).join(',');
+  document.getElementById('s_cat').value = p.cat || 'Panel';
+  document.getElementById('s_author').value = p.author || '';
+  document.getElementById('s_code').value = p.code || '';
+  if(p.image){ 
+    s_preview.src = p.image; 
+    s_preview.style.display = 'block';
+    fileLabel.innerText = '✅ Image attached';
+    fileLabel.classList.add('has-file');
+  }
+}
+function handleFileLoad(e){
+  const f = e.target.files[0]; 
+  if(!f) {
+    fileLabel.innerText = '📎 Choose image file or drag & drop';
+    fileLabel.classList.remove('has-file');
+    s_preview.style.display = 'none';
+    return;
+  }
+  
+  fileLabel.innerText = '✅ ' + f.name;
+  fileLabel.classList.add('has-file');
+  
+  const reader = new FileReader();
+  reader.onload = ()=> { 
+    s_preview.src = reader.result; 
+    s_preview.style.display = 'block'; 
+  };
+  reader.readAsDataURL(f);
+}
+
+/* Save snippet (create/update) */
+function saveSnippet(){
+  const editId = modal.dataset.edit;
+  const title = document.getElementById('s_title').value.trim();
+  const desc = document.getElementById('s_desc').value.trim();
+  const tags = document.getElementById('s_tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const cat = document.getElementById('s_cat').value;
+  const author = document.getElementById('s_author').value.trim() || 'guest';
+  const code = document.getElementById('s_code').value.trim();
+  const image = s_preview.src || '';
+
+  if(!title){ toast('Title required','warn'); return; }
+  if(!code){ if(!confirm('Save without code?')) return; }
+  
+  // BOT PROTECTION: Enhanced validation
+  if(title.length < 3){ toast('Title too short (min 3 chars)','warn'); return; }
+  if(title.length > 100){ toast('Title too long (max 100 chars)','warn'); return; }
+  if(code.length > 50000){ toast('Code too long (max 50k chars)','warn'); return; }
+  if(code.length < 10){ toast('Code too short (min 10 chars)','warn'); return; }
+  
+  // Check for spam patterns
+  const titleWords = title.split(/\s+/).filter(w => w.length > 1);
+  if(titleWords.length < 2){ toast('Title needs at least 2 meaningful words','warn'); return; }
+  
+  // Check for repeated characters (spam detection)
+  const hasSpam = /(.)\1{4,}/.test(title) || /(.)\1{10,}/.test(code);
+  if(hasSpam){ toast('Detected spam pattern - rejected','warn'); return; }
+  
+  // Check for random alphabet soup
+  const randomPattern = /^[a-zA-Z]{8,}$/.test(title.replace(/\s/g,''));
+  if(randomPattern){ toast('Title appears to be random text','warn'); return; }
+
+  // Enhanced rate limiting with escalating delays
+  const uploads = JSON.parse(sessionStorage.getItem('upload_history') || '[]');
+  const recentUploads = uploads.filter(t => Date.now() - t < 300000); // 5 min window
+  
+  if(!editId){
+    if(recentUploads.length >= 10){ toast('Too many uploads - wait 5 minutes','warn'); return; }
+    if(recentUploads.length >= 5){ 
+      const delay = Math.min(60000, recentUploads.length * 10000); // escalating delay
+      const lastUpload = Math.max(...recentUploads);
+      if(Date.now() - lastUpload < delay){ 
+        toast(`Please wait ${Math.ceil(delay/1000)} seconds between uploads`,'warn'); 
+        return; 
+      }
+    }
+    
+    // Update upload history
+    uploads.push(Date.now());
+    sessionStorage.setItem('upload_history', JSON.stringify(uploads.slice(-10))); // keep last 10
+  }
+
+  // duplicate detection: title or exact code
+  const dup = posts.find(x => x.id !== editId && (x.title.toLowerCase() === title.toLowerCase() || x.code === code));
+  if(dup){ toast('Duplicate title or code detected — rejected','warn'); return; }
+
+  // heuristics for spam: no Lua keywords -> warn user
+  const low = code.toLowerCase();
+  const luaKeywords = ['function','local','return','print','then','end','if','for','while','do'];
+  const hasLuaKeyword = luaKeywords.some(k => low.includes(k));
+  if(!hasLuaKeyword && !confirm('Code lacks Lua keywords — suspicious. Post anyway?')) { return; }
+
+  if(editId){
+    const idx = posts.findIndex(x=>x.id===editId);
+    if(idx > -1){
+      posts[idx] = {...posts[idx], title, desc, tags, cat, author, code, image};
+      saveAll(); closeModal(); renderList(); toast('Post updated','success');
+    } else { toast('Edit failed: not found','warn'); }
+  } else {
+    if(uploadSlots <= 0){ toast('No upload slots left — earn points to gain more','warn'); return; }
+    const token = uid();
+    const item = { id: uid(), title, desc, tags, cat, author, code, image, created: now(), token, likes:0, reports:0, viewers:0, likedBy: [], uploaderToken: user.token };
+    posts.unshift(item);
+    uploadSlots--; saveAll(); closeModal(); renderList();
+    // show token once (prompt + toast)
+    const copyOk = prompt('Copy this edit token now (save it to edit/delete later):', token);
+    toast('Snippet saved — token shown once; keep it safe','success',6000);
+  }
+}
+
+/* render list with filters & paging */
+function renderList(){
+  const q = (document.getElementById('q').value || '').trim().toLowerCase();
+  const tagFilter = (document.getElementById('tagFilter').value || '').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+  const sortBy = document.getElementById('sortBy').value;
+  let viewTab = document.querySelector('.tabs .tab.active')?.dataset.view || 'all';
+
+  let filtered = posts.filter(p => {
+    if(viewTab === 'panel' && p.cat !== 'Panel') return false;
+    if(viewTab === 'function' && p.cat !== 'Function') return false;
+    if(viewTab === 'gui' && p.cat !== 'GUI') return false;
+    if(q){
+      const hay = (p.title + ' ' + (p.desc||'') + ' ' + (p.tags||[]).join(' ') + ' ' + p.code).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(tagFilter.length){
+      for(const t of tagFilter) if(!p.tags.some(pt=>pt.toLowerCase()===t)) return false;
+    }
+    return true;
+  });
+
+  if(sortBy === 'new') filtered.sort((a,b)=> b.created.localeCompare(a.created));
+  else if(sortBy === 'old') filtered.sort((a,b)=> a.created.localeCompare(b.created));
+  else if(sortBy === 'title') filtered.sort((a,b)=> a.title.localeCompare(b.title));
+
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if(page > pages) page = pages;
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = filtered.slice(start, start + PAGE_SIZE);
+
+  const area = document.getElementById('listArea'); area.innerHTML = '';
+  if(!slice.length){
+    area.innerHTML = '<div style="grid-column:1/-1" class="card"><div class="small">No snippets found. Click + New snippet to add.</div></div>';
+  } else {
+    for(const p of slice) area.appendChild(renderCard(p));
+  }
+  document.getElementById('pageInfo').innerText = page + ' / ' + pages;
+  document.getElementById('pagerArea').innerHTML = (total ? `<div class="small">${total} result(s)</div>` : '');
+  updateCount();
+}
+
+/* create card element */
+function renderCard(p){
+  const el = document.createElement('article'); el.className = 'card';
+  const tagsHtml = (p.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join(' ');
+  const codePreview = escapeHtml(truncate(p.code, 1200));
+  
+  // Check if current user is the uploader
+  const isUploader = p.uploaderToken === user.token;
+  
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div style="flex:1">
+        <h4>${escapeHtml(p.title)}</h4>
+        <div class="meta">${escapeHtml(p.cat)} • by ${escapeHtml(p.author)} • <span style="color:var(--muted)">${new Date(p.created).toLocaleString()}</span></div>
+        <div class="small" style="margin-top:8px">${escapeHtml(p.desc||'')}</div>
+        <div class="taglist">${tagsHtml}</div>
+      </div>
+      <div style="width:120px;text-align:right">
+        <div class="badge">${p.tags && p.tags.length ? escapeHtml(p.tags[0]) : escapeHtml(p.cat)}</div>
+      </div>
+    </div>
+    ${p.image ? `<img src="${p.image}" style="max-width:100%;margin-top:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)">` : ''}
+    <pre class="code"><button class="copy-btn" data-id="${p.id}">Copy</button><code class="language-lua">${codePreview}</code></pre>
+    <div class="actions">
+      <button class="btn ghost" data-id="${p.id}" data-act="view">View</button>
+      <button class="btn ghost" data-id="${p.id}" data-act="like">❤️ ${p.likes||0}</button>
+      <button class="btn ghost" data-id="${p.id}" data-act="download">Download</button>
+      <button class="btn ghost" data-id="${p.id}" data-act="edit">Edit</button>
+      ${isUploader ? `<button class="btn ghost danger" data-id="${p.id}" data-act="delete">Delete</button>` : ''}
+      <button class="btn ghost report" data-id="${p.id}" data-act="report">Report</button>
+    </div>
+  `;
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', onCardAction));
+  // enable highlight.js to paint code after insertion
+  setTimeout(()=>{ if(window.hljs) hljs.highlightAll(); }, 10);
+  return el;
+}
+
+/* card actions */
+function onCardAction(e){
+  e.stopPropagation();
+  const id = e.target.dataset.id;
+  const act = e.target.dataset.act;
+  const p = posts.find(x=>x.id === id);
+  if(!p) return toast('Item not found','warn');
+  if(act === 'view'){ openView(p); p.viewers = (p.viewers||0)+1; saveAll(); }
+  else if(act === 'like'){ likePost(p); }
+  else if(act === 'download'){ downloadFile((p.title||'snippet') + '.lua', p.code); p.downloads = (p.downloads||0)+1; userPoints += 1; saveAll(); renderList(); }
+  else if(act === 'edit'){ const token = prompt('Enter edit token for this post:'); if(token === p.token) openModal(p.id); else toast('Invalid token','warn'); }
+  else if(act === 'delete'){ 
+    if(p.uploaderToken === user.token) {
+      if(confirm('Delete this snippet permanently?')) {
+        posts = posts.filter(x=>x.id !== p.id);
+        saveAll(); renderList();
+        toast('Snippet deleted','success');
+      }
+    } else {
+      const token = prompt('Enter edit token to delete this post:');
+      if(token === p.token) {
+        if(confirm('Delete this snippet permanently?')) {
+          posts = posts.filter(x=>x.id !== p.id);
+          saveAll(); renderList();
+          toast('Snippet deleted','success');
+        }
+      } else {
+        toast('Invalid token','warn');
+      }
+    }
+  }
+  else if(act === 'report'){ p.reports = (p.reports||0)+1; saveAll(); toast('Reported — moderators notified (simulated)','warn'); if(p.reports > 4){ posts = posts.filter(x=>x.id !== p.id); saveAll(); renderList(); toast('Post removed after multiple reports','warn'); } }
+  else {
+    if(e.target.classList.contains('copy-btn')){ const id2 = e.target.dataset.id; const p2 = posts.find(x=>x.id === id2); if(p2){ navigator.clipboard.writeText(p2.code).then(()=>{ e.target.innerText='OK'; setTimeout(()=>e.target.innerText='Copy',1200); toast('Code copied to clipboard','success'); }, ()=>toast('Copy failed','warn')); } }
+  }
+}
+
+/* like logic: one-like-per-user enforced by storing liked array per user token */
+function likePost(p){
+  user.liked = user.liked || [];
+  if(user.liked.includes(p.id)){ toast('You already liked this post','warn'); return; }
+  p.likes = (p.likes||0) + 1;
+  user.liked.push(p.id);
+  // reward system: +2 pts per like given (encourages engagement)
+  userPoints += 2;
+  // every 10 points grant a slot
+  if(userPoints >= 10 && (userPoints % 10 === 0)) { uploadSlots++; toast('Upload slot unlocked!','success'); }
+  localStorage.setItem('bm_user_liked', JSON.stringify(user.liked));
+  saveAll(); renderList();
+}
+
+/* view-only modal */
+function openView(p){
+  openModal(p.id);
+  fillModal(p);
+  ['s_title','s_desc','s_tags','s_author','s_code','s_cat'].forEach(id=>document.getElementById(id).setAttribute('readonly','true'));
+  document.getElementById('saveBtn').style.display = 'none';
+  document.getElementById('cancelModal').innerText = 'Close';
+  document.getElementById('cancelModal').onclick = ()=> {
+    ['s_title','s_desc','s_tags','s_author','s_code'].forEach(id=>document.getElementById(id).removeAttribute('readonly'));
+    document.getElementById('saveBtn').style.display = '';
+    document.getElementById('cancelModal').innerText = 'Cancel';
+    document.getElementById('cancelModal').onclick = closeModal;
+    closeModal();
+  };
+}
+
+/* download helper */
+function downloadFile(filename, content){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type:'text/plain'}));
+  a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* export/import */
+document.getElementById('exportBtn').addEventListener('click', ()=> {
+  const dt = { posts, uploadSlots, userPoints };
+  downloadFile('blockmango_export.json', JSON.stringify(dt, null, 2));
+});
+document.getElementById('importBtn').addEventListener('click', ()=> {
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+  inp.onchange = async (e) => {
+    const f = e.target.files[0]; if(!f) return; const txt = await f.text();
+    try {
+      const obj = JSON.parse(txt);
+      if(Array.isArray(obj.posts)) posts = obj.posts.concat(posts);
+      if(typeof obj.uploadSlots === 'number') uploadSlots = obj.uploadSlots;
+      if(typeof obj.userPoints === 'number') userPoints = obj.userPoints;
+      saveAll(); renderList(); toast('Import complete','success');
+    } catch(err){ toast('Invalid JSON file','warn'); }
+  }; inp.click();
+});
+
+/* UI wiring: tabs, filters, paging */
+document.querySelectorAll('.tabs .tab').forEach(t => t.addEventListener('click', ()=> { document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); activeView = t.dataset.view; page=1; renderList(); }));
+document.querySelectorAll('.sidebar .tab').forEach(t => t.addEventListener('click', ()=> { document.querySelectorAll('.sidebar .tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); const c = t.dataset.cat.toLowerCase(); document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('active')); if(c==='panel') document.querySelector('.tabs .tab[data-view="panel"]').classList.add('active'), activeView='panel'; else if(c==='function') document.querySelector('.tabs .tab[data-view="function"]').classList.add('active'), activeView='function'; else if(c==='gui') document.querySelector('.tabs .tab[data-view="gui"]').classList.add('active'), activeView='gui'; else document.querySelector('.tabs .tab[data-view="all"]').classList.add('active'), activeView='all'; page=1; renderList(); }));
+document.getElementById('searchBtn').addEventListener('click', ()=> { page=1; renderList(); });
+document.getElementById('q').addEventListener('keydown', (e)=> { if(e.key==='Enter'){ page=1; renderList(); }});
+document.getElementById('tagFilter').addEventListener('keydown', (e)=> { if(e.key==='Enter'){ page=1; renderList(); }});
+document.getElementById('sortBy').addEventListener('change', ()=> { page=1; renderList(); });
+document.getElementById('clearFilters').addEventListener('click', ()=> { document.getElementById('q').value=''; document.getElementById('tagFilter').value=''; document.getElementById('sortBy').value='new'; page=1; renderList(); });
+document.getElementById('refreshBtn').addEventListener('click', ()=> { loadAll(); renderList(); });
+document.getElementById('prevPage').addEventListener('click', ()=> { if(page>1) page--; renderList(); });
+document.getElementById('nextPage').addEventListener('click', ()=> { page++; renderList(); });
+
+/* new post open with slot check */
+document.getElementById('newBtn').addEventListener('click', ()=> {
+  if(uploadSlots <= 0){ toast('No upload slots left — earn points to unlock more','warn'); return; }
+  openModal();
+});
+
+/* spam protection: simple throttle */
+document.getElementById('saveBtn').addEventListener('click', ()=> {
+  const last = sessionStorage.getItem('last_upload_ts'); const nowTs = Date.now();
+  if(last && (nowTs - Number(last) < 8000)){ toast('Please wait before uploading again','warn'); return; }
+  sessionStorage.setItem('last_upload_ts', nowTs.toString());
+});
+
+/* helpers */
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function truncate(s,n){ if(!s) return ''; if(s.length<=n) return s; return s.slice(0,n) + '\n\n-- truncated --'; }
+
+/* initial rendering */
+renderList();
+
+/* save/load convenience */
+function saveAll(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({ posts, user, uploadSlots, userPoints })); localStorage.setItem('bm_user_liked', JSON.stringify(user.liked)); updateCount(); }
+function loadAll(){ try { const obj = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); posts = Array.isArray(obj.posts) ? obj.posts : []; user = obj.user || user; uploadSlots = typeof obj.uploadSlots === 'number' ? obj.uploadSlots : 5; userPoints = typeof obj.userPoints === 'number' ? obj.userPoints : 0; user.liked = JSON.parse(localStorage.getItem('bm_user_liked')||'[]'); } catch(e){ posts=[]; user.liked=[]; uploadSlots=5; userPoints=0; } updateCount(); }
+
+/* ESC closes modal */
+document.addEventListener('keydown', (e)=> { if(e.key==='Escape') closeModal(); });
+
+/* initial save (persist defaults) */
+saveAll();
+
+</script>
+
+<!-- OVERLAY PATCH: improved report UI + point system + stricter like guard -->
+<script>
+(function(){
+  try {
+    // --- Initialize user points ---
+    if(typeof window.userPoints !== 'number'){
+      try{
+        const stored = localStorage.getItem('bm_user_points');
+        window.userPoints = stored ? parseInt(stored) : 5; // start at 5
+      }catch(_){ window.userPoints = 5; }
+    }
+    function savePoints(){
+      try{ localStorage.setItem('bm_user_points', String(window.userPoints)); }catch(_){}
+    }
+
+    // --- Toast anti-spam ---
+    let lastToastTime = 0;
+    let lastToastMsg = '';
+    const origToast = window.toast;
+    window.toast = function(msg, type){
+      const now = Date.now();
+      if(msg === lastToastMsg && now - lastToastTime < 2000){ return; }
+      lastToastMsg = msg; lastToastTime = now;
+      if(typeof origToast==='function'){ origToast(msg,type); }
+    };
+
+    // --- LikePost override ---
+    const origLike = window.likePost;
+    window.likePost = function(p){
+      if(!p) return;
+      if(p.uploaderToken === user.token){ toast('You cannot like your own post','warn'); return; }
+      user.liked = user.liked || [];
+      p.likedBy = p.likedBy || [];
+      if(user.liked.includes(p.id) || p.likedBy.includes(user.token)){
+        toast('You already liked this post','warn'); return;
+      }
+      if(typeof origLike==='function'){ origLike(p); } else { p.likes = (p.likes||0)+1; }
+      // ensure unique like record
+      if(!p.likedBy.includes(user.token)) p.likedBy.push(user.token);
+      if(!user.liked.includes(p.id)) user.liked.push(p.id);
+      try{ localStorage.setItem('bm_user_liked', JSON.stringify(user.liked)); }catch(_){}
+      // award host +1 point
+      try{
+        if(p.uploaderToken && p.uploaderToken !== user.token){
+          if(typeof window.userMap !== 'undefined'){
+            // if you track users, adjust host points here
+          }
+          // fallback: global pool
+          window.userPoints += 1;
+          savePoints();
+        }
+      }catch(_){}
+      if(typeof saveAll==='function') saveAll();
+      if(typeof renderList==='function') renderList();
+    };
+
+    // --- Report dialog UI ---
+    function showReportDialog(p){
+      const modal = document.createElement('div');
+      modal.style.position='fixed';
+      modal.style.top='0'; modal.style.left='0'; modal.style.width='100%'; modal.style.height='100%';
+      modal.style.background='rgba(0,0,0,0.6)'; modal.style.zIndex='9999';
+      modal.style.display='flex'; modal.style.alignItems='center'; modal.style.justifyContent='center';
+      const box = document.createElement('div');
+      box.style.background='#fff'; box.style.padding='20px'; box.style.borderRadius='12px'; box.style.maxWidth='400px'; box.style.width='90%';
+      box.innerHTML = '<h3 style="margin-top:0">Report Post</h3><textarea id="reportReason" placeholder="Describe the problem..." style="width:100%;height:100px;resize:vertical"></textarea><br><br>';
+      const btnRow = document.createElement('div');
+      btnRow.style.textAlign='right';
+      const submit = document.createElement('button'); submit.textContent='Submit'; submit.style.background='green'; submit.style.color='#fff'; submit.style.padding='6px 12px'; submit.style.marginRight='8px'; submit.style.border='none'; submit.style.borderRadius='6px';
+      const cancel = document.createElement('button'); cancel.textContent='Cancel'; cancel.style.background='red'; cancel.style.color='#fff'; cancel.style.padding='6px 12px'; cancel.style.border='none'; cancel.style.borderRadius='6px';
+      btnRow.appendChild(submit); btnRow.appendChild(cancel);
+      box.appendChild(btnRow); modal.appendChild(box);
+      document.body.appendChild(modal);
+      cancel.onclick = ()=>{ document.body.removeChild(modal); };
+      submit.onclick = ()=>{
+        const txt = box.querySelector('#reportReason').value.trim();
+        if(!txt){ toast('Please enter a reason','warn'); return; }
+        p.reportedBy = p.reportedBy || [];
+        p.reportReasons = p.reportReasons || [];
+        if(p.reportedBy.includes(user.token)){ toast('You already reported this','warn'); return; }
+        p.reportedBy.push(user.token);
+        p.reportReasons.push({user:user.token,text:txt});
+        p.reports = p.reportedBy.length;
+        if(typeof saveAll==='function') saveAll();
+        toast('Report submitted','warn');
+        autoModerate(p);
+        document.body.removeChild(modal);
+      };
+    }
+
+    // --- Auto moderation ---
+    function normalizeReason(str){
+      return (str||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,' ');
+    }
+    function autoModerate(p){
+      if(!p || !Array.isArray(p.reportReasons)) return;
+      const counts = {};
+      for(const r of p.reportReasons){
+        const key = normalizeReason(r.text);
+        if(!key) continue;
+        counts[key] = (counts[key]||0)+1;
+      }
+      let maxCount = 0;
+      for(const k in counts){ if(counts[k]>maxCount) maxCount = counts[k]; }
+      if(maxCount >= 3){
+        posts = (posts||[]).filter(x=>x.id !== p.id);
+        if(typeof saveAll==='function') saveAll();
+        if(typeof renderList==='function') renderList();
+        toast('Post removed automatically after repeated reports','warn');
+      }
+    }
+
+    // --- Override onCardAction ---
+    const originalOnCardAction = window.onCardAction;
+    window.onCardAction = function(e){
+      try{
+        const act = e?.target?.dataset?.act;
+        const id = e?.target?.dataset?.id;
+        const p = posts?.find?.(x=>x.id === id);
+        if(act === 'like'){
+          if(!p){ return; }
+          if(p.uploaderToken === user.token){ toast('You cannot like your own post','warn'); return; }
+          if(e && e.target){ e.target.disabled=true; setTimeout(()=>{try{e.target.disabled=false}catch(_){ }},400); }
+          likePost(p);
+          return;
+        }
+        if(act === 'report'){
+          if(!p){ toast('Item not found','warn'); return; }
+          showReportDialog(p);
+          return;
+        }
+      }catch(err){ console.error('onCardAction overlay error', err); }
+      if(typeof originalOnCardAction==='function') return originalOnCardAction(e);
+    };
+
+    // --- Posting cost hook ---
+    const origSaveSnippet = window.saveSnippet;
+    window.saveSnippet = function(){
+      if(window.userPoints <= 0){
+        toast('Not enough points to post','warn');
+        return;
+      }
+      if(typeof origSaveSnippet==='function'){
+        origSaveSnippet();
+        window.userPoints -= 1;
+        savePoints();
+      }
+    };
+
+    // --- Hide export/import ---
+    ['exportBtn','importBtn'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el){ el.style.display='none'; el.addEventListener('click', ev=>{ev.preventDefault();ev.stopPropagation();return false;},true); }
+    });
+
+    // --- Ensure modal scroll into view ---
+    const openModalOrig = window.openModal;
+    if(typeof openModalOrig==='function'){
+      window.openModal = function(editId){
+        try{ window.scrollTo({top:0}); }catch(_){}
+        const r = openModalOrig(editId);
+        try{ const box = document.querySelector('#modal .box'); if(box && box.scrollIntoView) box.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){}
+        return r;
+      };
+    }
+
+  }catch(err){ console.error('overlay init error', err); }
+})();
+</script>
+
+</body>
 </html>
